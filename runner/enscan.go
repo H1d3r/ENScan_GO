@@ -159,9 +159,9 @@ func (j *EnJob) getInfoList(pid string, em *common.EnsGo, sk string, ref string)
 func (j *EnJob) processTask(task DeepSearchTask) {
 	gologger.Info().Msgf("【%d,%d】正在获取⌈%s⌋信息，关联原因 %s", j.processed, j.total, task.Name, task.Ref)
 	data := j.getCompanyInfoById(task.Pid, task.SearchList, task.Ref)
-	j.wg.Done()
 	// 如果已经到了对应层级就不需要跑了
 	if task.Deep >= j.job.GetEnsD().Op.Deep {
+		j.wg.Done()
 		return
 	}
 	gologger.Info().Msgf("⌈%s⌋深度搜索到第⌈%d⌋层", task.Name, task.Deep)
@@ -173,6 +173,8 @@ func (j *EnJob) processTask(task DeepSearchTask) {
 			task.SearchList,
 		})
 	}
+	// 所有子任务添加完成后再调用 Done，防止竞态导致的 "send on closed channel"
+	j.wg.Done()
 }
 
 // getDPS 根据List和规则筛选需要深度搜索的规则
