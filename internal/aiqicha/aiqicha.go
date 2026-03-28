@@ -34,12 +34,12 @@ func (h *AQC) AdvanceFilter(name string) ([]gjson.Result, error) {
 		gologger.Debug().Str("查询请求", name).Msg(content)
 		return enList, fmt.Errorf("【AQC】没有查询到关键词 ⌈%s⌋", name)
 	}
-	// advanceFilterAjax 接口特殊处理
-	//ddw := gjson.Get(content, "ddw").Int()
-	//for i, v := range enList {
-	//	s, _ := sjson.Set(v.Raw, "pid", transformNumber(v.Get("pid").String(), ddw))
-	//	enList[i] = gjson.Parse(s)
-	//}
+	//advanceFilterAjax 接口特殊处理
+	ddw := gjson.Get(content, "ddw").Int()
+	for i, v := range enList {
+		s, _ := sjson.Set(v.Raw, "pid", transformNumber(v.Get("pid").String(), ddw))
+		enList[i] = gjson.Parse(s)
+	}
 	return enList, nil
 }
 
